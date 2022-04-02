@@ -42,10 +42,10 @@ public class EventController {
     @PutMapping("/{id}")
     public Event editEventById(@PathVariable UUID id, @RequestBody EventData eventData) {
         Event event = eventRepository.getById(id);
-        event.name = eventData.name();
-        event.date = eventData.date();
-        event.place = eventData.place();
-        event.description = eventData.description();
+        event.setName(eventData.name());
+        event.setDate(eventData.date());
+        event.setPlace(eventData.place());
+        event.setDescription(eventData.description());
         return eventRepository.save(event);
     }
 }

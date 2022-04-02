@@ -40,10 +40,11 @@ public class LocalUserController {
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(CREATED)
     public LocalUser editLocalUserById(@PathVariable UUID id, @RequestBody LocalUserData localUserData) {
         LocalUser localUser = localUserRepository.getById(id);
-        localUser.email = localUserData.email();
-        localUser.name = localUserData.name();
+        localUser.setName(localUserData.name());
+        localUser.setEmail(localUserData.email());
         return localUserRepository.save(localUser);
     }
 }

@@ -1,8 +1,6 @@
 package com.example.cochceszsewpisz;
 
-import org.junit.Before;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -55,14 +51,11 @@ class LocalUserControllerIntegrationTest extends IntegrationTestBase {
                 """;
 
         mockMvc.perform(post("/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(payload));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(payload));
         mockMvc.perform(get("/user")
                 .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.id", not(empty())))
-                .andExpect(jsonPath("$.name", is("Marcin Toster")))
-                .andExpect(jsonPath("$.email", is("marcin.toaster@gmail.com")));
+        ).andExpect(status().is2xxSuccessful());
     }
 
     @Test
@@ -74,13 +67,20 @@ class LocalUserControllerIntegrationTest extends IntegrationTestBase {
                 }
                 """;
 
-        mockMvc.perform(post("/user")
+        String body = mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(payload));
-        mockMvc.perform(get("/user/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload)
-        ).andExpect(status().is2xxSuccessful());
+                .content(payload))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String id = JsonPath.read(body, "$.id");
+
+        mockMvc.perform(get("/user/" + id)
+        ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", not(empty())))
+                .andExpect(jsonPath("$.name", is("Marcin Toster")))
+                .andExpect(jsonPath("$.email", is("marcin.toster@gmail.com")));
     }
 
     @Test
@@ -92,19 +92,27 @@ class LocalUserControllerIntegrationTest extends IntegrationTestBase {
                 }
                 """;
 
-        mockMvc.perform(post("/user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(payload));
-        final var payload1 = """
+        final var update = """
                 {
                     "name": "Marcin Toaster",
                     "email": "marcin.toaster@gmail.com"
                 }
                 """;
-        mockMvc.perform(put("/user/1")
+
+        String body = mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(payload1)
-        ).andExpect(status().isCreated())
+                .content(payload))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String id = JsonPath.read(body, "$.id");
+
+        mockMvc.perform(put("/user/" + id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(update)
+        ).andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.id", not(empty())))
                 .andExpect(jsonPath("$.name", is("Marcin Toaster")))
                 .andExpect(jsonPath("$.email", is("marcin.toaster@gmail.com")));
@@ -119,11 +127,16 @@ class LocalUserControllerIntegrationTest extends IntegrationTestBase {
                 }
                 """;
 
-        mockMvc.perform(post("/user")
+        String body = mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(payload));
-        mockMvc.perform(delete("/user/1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .content(payload))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        String id = JsonPath.read(body, "$.id");
+
+        mockMvc.perform(delete("/user/" + id)
         ).andExpect(status().is2xxSuccessful());
     }
 

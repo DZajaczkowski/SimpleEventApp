@@ -42,7 +42,7 @@ public class VoucherController {
     @PutMapping("/{code}")
     public Voucher editVoucherById(@PathVariable UUID code, @RequestBody VoucherData voucherData) {
         Voucher voucher = voucherRepository.getById(code);
-        voucher.status = voucherData.status();
+        voucher.setStatus(voucherData.status());
         return voucherRepository.save(voucher);
     }
 }
