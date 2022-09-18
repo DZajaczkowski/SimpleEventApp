@@ -2,7 +2,7 @@
 
 ## Why it was created?
 
-* A friend asked me to create a base version of event operating app with databases.
+* A friend asked me to create a base version of event operating app with database.
 * I used the chance to practice Spring Boot when I was still learning some basics of it, including JSON.
 
 ## Is the project finished?
