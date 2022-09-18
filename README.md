@@ -7,7 +7,7 @@
 
 ## Is the project finished?
 
-* It is not finished per se, but it is currently on hold as there was no reason to continue its development at that point.
+* It is not finished, but it is currently on hold as there was no reason to continue its development at that point.
 
 ## What does it do?
 
